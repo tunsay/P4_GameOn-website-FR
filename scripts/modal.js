@@ -12,7 +12,7 @@ const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const modalClose = document.querySelectorAll(".close");
-const form = document.querySelector('form');
+const formElement = document.querySelector('form');
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -31,7 +31,7 @@ function close() {
   modalbg.style.display = "none";
 }
 
-// form data elements
+// form data elements (field)
 var firstName = document.forms["reserve"]["first"];
 var lastName = document.forms["reserve"]["last"];
 var email = document.forms["reserve"]["email"];
@@ -39,126 +39,163 @@ var birthdate = document.forms["reserve"]["birthdate"];
 var quantity = document.forms["reserve"]["quantity"];
 var conditions = document.forms["reserve"]["checkbox1"];
 
-//error messages
-const errorMessages = {
-  firstNameError: "Vous devez entrer 2 caractères ou plus.",
-  lastNameError: "Vous devez entrer 2 caractères ou plus.",
-  emailError: "L'adresse email est invalide.",
-  birthdateError: "La date de naissance est invalide.",
-  quantityError: "Veuillez entrer un nombre valide entre 0 et 99.",
-  locationError: "Vous devez sélectionner une ville.",
-  conditionsError: "Vous devez accepter les conditions d'utilisations."
-};
+let form = [firstName, lastName, email, birthdate, quantity, conditions]
 
 
-// checks first name & returns true if not empty and has 2 or more characters
-function firstNameValid() {
-  let nameInput = firstName.value;
-  return nameInput !== null && nameInput.length >= 2;
-}
-
-// checks last name & returns true if not empty and has 2 or more characters
-function lastNameValid() {
-  let lastNameInput = lastName.value;
-  return lastNameInput !== null && lastNameInput.length >= 2;
-}
-
-//checks for correct email format
-function emailValid() {
-  let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  let emailInput = email.value;
-  if (emailInput.match(regexEmail)) return true;
-}
-
-// checks that only numbers between 0 and 99 are entered
-function quantityValid() {
-  if (quantity.value !== '' && quantity.value >= 0 && quantity.value <= 99)
-    return true;
-}
-
-//checks for correct birthdate
-function birthdateValid() {
-  let regexBirthdate = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
-  return regexBirthdate.test(birthdate.value);
-}
-
-// checks that a location has been selected
-function locationValid() {
-  // gets all radio inputs
-  let radioButtons = document.forms["reserve"]["location"];
-  // loops through all radio inputs, returns true if one is checked
-  for (let radio of radioButtons) {
-    if (radio.checked === true) return true;
+const fieldsValidators = {
+  first: { //[field.name]
+    constraints: ['required', 'letter', 'min:2', 'max:50'],
+    special: true
+  },
+  last: {
+    constraints: ['required', 'letter', 'min:2', 'max:50'],
+  },
+  email: {
+    constraints: ['required', 'mailRegex', 'max:50'],
+  },
+  birthdate: {
+    constraints: ['required', 'birthdateRegex'],
+  },
+  quantity: {
+    constraints: ['required', 'number', 'min:0', 'max:99'],
+  },
+  checkbox1: {
+    constraints: ['check'],
   }
 }
 
-// checks that the required box is checked
-function conditionsValid() {
-  return conditions.checked;
-}
-
-
-
-// displays error message when field is invalid
-function isInvalid(i, message) {
-  formData[i].setAttribute("data-error-visible", "true");
-  formData[i].setAttribute("data-error", message);
-}
-
-// removes error message on valid fields
-function isValid() {
-  let invalidInput = document.querySelectorAll('.formData[data-error-visible="true"]');
-  for (let input of invalidInput) {
-    input.setAttribute("data-error-visible", "false");
-    input.setAttribute("data-error", "");
-  }
-}
-
-
-
-form.addEventListener('submit', function (e) {
+formElement.addEventListener('submit', function (e) {
   e.preventDefault();
-  // validate();
+  validateFields(form); //[firstName, lastName, email, birthdate, quantity, conditions]
 });
 
-// checks every field, displays error message when invalid
-function validate() {
-  let formValid = true;
-  // clear the ancient message error
-  isValid();
-  if (!firstNameValid()) {
-    isInvalid(0, errorMessages.firstNameError);
-    formValid = false;
-  }
-  if (!lastNameValid()) {
-    formValid = false;
-    isInvalid(1, errorMessages.lastNameError);
-  }
-  if (!emailValid()) {
-    formValid = false;
-    isInvalid(2, errorMessages.emailError);
-  }
-  if (!birthdateValid()) {
-    formValid = false;
-    isInvalid(3, errorMessages.birthdateError);
-  }
-  if (!quantityValid()) {
-    formValid = false;
-    isInvalid(4, errorMessages.quantityError);
-  }
-  if (!locationValid()) {
-    formValid = false;
-    isInvalid(5, errorMessages.locationError);
-  }
-  if (!conditionsValid()) {
-    formValid = false;
-    isInvalid(6, errorMessages.conditionsError);
-  }
-  if (formValid) {
-    console.log(firstName.value);
-    alert("Tout est ok !");
-    close();
+function validateFields(fields) { //[firstName, lastName, email, birthdate, quantity, conditions]
+  fields.forEach(field => { //For each Field
+    validateField(field, fieldsValidators[field.name].constraints);
+  });
+
+}
+
+
+
+
+function validateField(field, validators) { //{firstName, .constraints['required', 'letter', 'min:2', 'max:50']}
+  for (const validator of validators) { //Each constraint
+    let error = ""
+    let minMax = 0
+    let newValidator = validator 
+
+    if (validator.indexOf(":") > -1) {
+      newValidator = validator.split(":")[0] //min Ex.
+      minMax = validator.split(":")[1] //10 Ex.
+    }
+
+    switch (newValidator) {
+      case 'required':
+        error = checkRequired(field)
+        break
+      case 'number':
+        error = checkNumber(field)
+        break
+      case 'letter':
+        error = checkLetter(field)
+        break
+      case 'min':
+        error = checkMin(field, minMax)
+        break
+      case 'mailRegex':
+        error = checkMailRegex(field)
+        break
+      case 'birthdateRegex':
+        error = checkBirthdateRegex(field)
+        break
+      case 'max':
+        error = checkMax(field, minMax)
+        break
+      case 'check':
+        error = checkConditions(field)
+        break
+    }
+    if (error) {
+      field.parentElement.setAttribute("data-error-visible", "true"); //parentElement = class formData
+      field.parentElement.setAttribute("data-error", error);
+      // console.log(first.parentElement)
+      valideoupas = false;
+      break
+    }
+    else {
+      field.parentElement.setAttribute("data-error-visible", "false");
+      field.parentElement.setAttribute("data-error", "");
+    }
   }
 }
 
 
+
+
+
+
+//REGEX
+let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+let regexLetter = /^[a-zA-Z]+$/i;
+let regexBirthdate = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+//regex
+
+function checkRequired(field) {
+  if (field.value == "")
+    return "Le champ ne doit pas être pas vide"
+}
+
+function checkMin(field, min) {
+  if (!isNaN(field.value) && field.value < min) {
+    return "Le chiffre doit faire minimum " + min
+  }
+  if (field.value.match(regexLetter) && field.value.length <= min) {
+    return "Vous devez entrer " + min + " caractères ou plus"
+  }
+}
+
+function checkMax(field, max) {
+  if (!isNaN(field.value) && field.value > max) {
+    return "Le maximum est " + max
+  }
+  if (field.value.match(regexLetter) && field.value.length >= max) {
+    return "Vous devez entrer " + max + " caractères ou moins"
+  }
+}
+
+function checkMailRegex(field) {
+  let emailInput = field.value;
+  if (!emailInput.match(regexEmail)) {
+    return "Ce n'est pas un mail valide";
+  }
+}
+
+function checkBirthdateRegex(field) {
+  let birthdateInput = field.value;
+  if (!birthdateInput.match(regexBirthdate)) {
+    return "Ce n'est pas une date valide";
+  }
+}
+
+function checkNumber(field) {
+  if (!isNaN(field)) {
+    return "Ceci n'est pas un numéro"
+  }
+  let MathSign = Math.sign(field.value)
+  if (MathSign == -1) {
+    return "Le numéro doit être positif"
+  }
+}
+
+function checkLetter(field) {
+  if (!field.value.match(regexLetter)) {
+    return "Veuillez entrer des lettres"
+  }
+}
+
+function checkConditions(field) {
+  if (!field.checked) {
+    return "Il faut accepter les conditions d'utilisations"
+  };
+}
