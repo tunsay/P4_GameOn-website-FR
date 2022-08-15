@@ -37,15 +37,15 @@ var lastName = document.forms["reserve"]["last"];
 var email = document.forms["reserve"]["email"];
 var birthdate = document.forms["reserve"]["birthdate"];
 var quantity = document.forms["reserve"]["quantity"];
+var userLocation = {name: 'location', data: document.forms["reserve"]["location"]}
 var conditions = document.forms["reserve"]["checkbox1"];
 
-let form = [firstName, lastName, email, birthdate, quantity, conditions]
+let form = [firstName, lastName, email, birthdate, quantity, userLocation, conditions]
 
 
 const fieldsValidators = {
   first: { //[field.name]
     constraints: ['required', 'letter', 'min:2', 'max:50'],
-    special: true
   },
   last: {
     constraints: ['required', 'letter', 'min:2', 'max:50'],
@@ -57,11 +57,14 @@ const fieldsValidators = {
     constraints: ['required', 'birthdateRegex'],
   },
   quantity: {
-    constraints: ['required', 'number', 'min:0', 'max:99'],
+    constraints: ['required', 'number'],
+  },
+  location: {
+    constraints: ['radioRequired']
   },
   checkbox1: {
     constraints: ['check'],
-  }
+  },
 }
 
 formElement.addEventListener('submit', function (e) {
@@ -69,13 +72,18 @@ formElement.addEventListener('submit', function (e) {
   validateFields(form); //[firstName, lastName, email, birthdate, quantity, conditions]
 });
 
+let isValidate = true;
+
 function validateFields(fields) { //[firstName, lastName, email, birthdate, quantity, conditions]
+  isValidate = true
   fields.forEach(field => { //For each Field
     validateField(field, fieldsValidators[field.name].constraints);
   });
-
+  if (isValidate) {
+     alert('ok !')
+  }
+ 
 }
-
 
 
 
@@ -115,25 +123,33 @@ function validateField(field, validators) { //{firstName, .constraints['required
       case 'check':
         error = checkConditions(field)
         break
+      case 'radioRequired':
+        error = checkRadio(field)
+        break
     }
     if (error) {
+      isValidate = false;
+      if (field.data) {
+        field.data[0].parentElement.setAttribute("data-error-visible", "true");
+        field.data[0].parentElement.setAttribute("data-error", error);        
+        break
+      }
       field.parentElement.setAttribute("data-error-visible", "true"); //parentElement = class formData
       field.parentElement.setAttribute("data-error", error);
-      // console.log(first.parentElement)
-      valideoupas = false;
       break
     }
     else {
-      field.parentElement.setAttribute("data-error-visible", "false");
-      field.parentElement.setAttribute("data-error", "");
+      if (field.data) {
+        field.data[0].parentElement.setAttribute("data-error-visible", "false");
+        field.data[0].parentElement.setAttribute("data-error", "");
+      } else {
+        field.parentElement.setAttribute("data-error-visible", "false");
+        field.parentElement.setAttribute("data-error", "");
+      }
     }
   }
+
 }
-
-
-
-
-
 
 //REGEX
 let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -191,6 +207,18 @@ function checkNumber(field) {
 function checkLetter(field) {
   if (!field.value.match(regexLetter)) {
     return "Veuillez entrer des lettres"
+  }
+}
+
+function checkRadio(field) {
+  let isChecked = false;
+  for (const element of field.data){
+    if (element.checked) {
+      isChecked = true
+    }
+  }
+  if (isChecked == false) {
+    return "Tu as des coches à faire"
   }
 }
 
