@@ -11,8 +11,10 @@ function editNav() {
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
-const modalClose = document.querySelectorAll(".close");
+const modalClose = document.querySelectorAll(".close"); //Select all crosses in the modal
 const formElement = document.querySelector('form');
+const modalConfirm = document.querySelector('.modal-confirm');
+const modalConfirmClose = document.querySelector('.modal-confirm-btn');
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -30,6 +32,17 @@ modalClose.forEach((btn) => btn.addEventListener("click", close));
 function close() {
   modalbg.style.display = "none";
 }
+
+// displays confimation message on valid form submit
+function confirmationOpen(){
+  modalConfirm.style.display = "flex";
+  modalbg.style.display = "none";
+}
+
+//closes confirmation window
+modalConfirmClose.addEventListener('click', () => {
+  modalConfirm.style.display = "none";
+})
 
 // form data elements (field)
 var firstName = document.forms["reserve"]["first"];
@@ -80,7 +93,7 @@ function validateFields(fields) { //[firstName, lastName, email, birthdate, quan
     validateField(field, fieldsValidators[field.name].constraints);
   });
   if (isValidate) {
-     alert('ok !')
+     confirmationOpen();
   }
  
 }
