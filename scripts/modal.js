@@ -12,9 +12,9 @@ const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const modalClose = document.querySelectorAll(".close"); //Select all crosses in the modal
-const formElement = document.querySelector('form');
-const modalConfirm = document.querySelector('.modal-confirm');
-const modalConfirmClose = document.querySelector('.modal-confirm-btn');
+const formElement = document.querySelector('form'); //Select the form (name=reserve)
+const modalConfirm = document.querySelector('.modal-confirm'); //Select the modal after confirmation
+const modalConfirmClose = document.querySelector('.modal-confirm-btn'); //Select the "Close" button
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -34,7 +34,7 @@ function close() {
 }
 
 // displays confimation message on valid form submit
-function confirmationOpen(){
+function confirmationOpen() {
   modalConfirm.style.display = "flex";
   modalbg.style.display = "none";
 }
@@ -50,14 +50,14 @@ var lastName = document.forms["reserve"]["last"];
 var email = document.forms["reserve"]["email"];
 var birthdate = document.forms["reserve"]["birthdate"];
 var quantity = document.forms["reserve"]["quantity"];
-var userLocation = {name: 'location', data: document.forms["reserve"]["location"]}
+var userLocation = { name: 'location', data: document.forms["reserve"]["location"] }
 var conditions = document.forms["reserve"]["checkbox1"];
 
 let form = [firstName, lastName, email, birthdate, quantity, userLocation, conditions]
 
 
 const fieldsValidators = {
-  first: { //[field.name]
+  first: {
     constraints: ['required', 'letter', 'min:2', 'max:50'],
   },
   last: {
@@ -93,22 +93,21 @@ function validateFields(fields) { //[firstName, lastName, email, birthdate, quan
     validateField(field, fieldsValidators[field.name].constraints);
   });
   if (isValidate) {
-     confirmationOpen();
+    confirmationOpen();
+    resetForm();
   }
- 
+
 }
 
-
-
 function validateField(field, validators) { //{firstName, .constraints['required', 'letter', 'min:2', 'max:50']}
-  for (const validator of validators) { //Each constraint
+  for (const validator of validators) {
     let error = ""
     let minMax = 0
-    let newValidator = validator 
+    let newValidator = validator
 
     if (validator.indexOf(":") > -1) {
-      newValidator = validator.split(":")[0] //min Ex.
-      minMax = validator.split(":")[1] //10 Ex.
+      newValidator = validator.split(":")[0]
+      minMax = validator.split(":")[1]
     }
 
     switch (newValidator) {
@@ -144,10 +143,10 @@ function validateField(field, validators) { //{firstName, .constraints['required
       isValidate = false;
       if (field.data) {
         field.data[0].parentElement.setAttribute("data-error-visible", "true");
-        field.data[0].parentElement.setAttribute("data-error", error);        
+        field.data[0].parentElement.setAttribute("data-error", error);
         break
       }
-      field.parentElement.setAttribute("data-error-visible", "true"); //parentElement = class formData
+      field.parentElement.setAttribute("data-error-visible", "true");
       field.parentElement.setAttribute("data-error", error);
       break
     }
@@ -164,79 +163,78 @@ function validateField(field, validators) { //{firstName, .constraints['required
 
 }
 
-//REGEX
+//REGEX Verification
 let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 let regexLetter = /^[a-zA-Z]+$/i;
 let regexBirthdate = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
-//regex
 
+//Each function check each field
 function checkRequired(field) {
   if (field.value == "")
-    return "Le champ ne doit pas être pas vide"
+    return "Le champ ne doit pas être vide !"
 }
 
 function checkMin(field, min) {
-  if (!isNaN(field.value) && field.value < min) {
-    return "Le chiffre doit faire minimum " + min
-  }
   if (field.value.match(regexLetter) && field.value.length <= min) {
-    return "Vous devez entrer " + min + " caractères ou plus"
+    return "Vous devez entrer " + min + " caractères ou plus !"
   }
 }
 
 function checkMax(field, max) {
-  if (!isNaN(field.value) && field.value > max) {
-    return "Le maximum est " + max
-  }
   if (field.value.match(regexLetter) && field.value.length >= max) {
-    return "Vous devez entrer " + max + " caractères ou moins"
+    return "Vous devez entrer " + max + " caractères ou moins !"
   }
 }
 
 function checkMailRegex(field) {
   let emailInput = field.value;
   if (!emailInput.match(regexEmail)) {
-    return "Ce n'est pas un mail valide";
+    return "Ceci n'est pas un mail valide !";
   }
 }
 
 function checkBirthdateRegex(field) {
   let birthdateInput = field.value;
   if (!birthdateInput.match(regexBirthdate)) {
-    return "Ce n'est pas une date valide";
+    return "Ce n'est pas une date valide !";
   }
 }
 
 function checkNumber(field) {
   if (!isNaN(field)) {
-    return "Ceci n'est pas un numéro"
+    return "Ceci n'est pas un numéro !"
   }
   let MathSign = Math.sign(field.value)
   if (MathSign == -1) {
-    return "Le numéro doit être positif"
+    return "Le numéro doit être positif !"
   }
 }
 
 function checkLetter(field) {
   if (!field.value.match(regexLetter)) {
-    return "Veuillez entrer des lettres"
+    return "Veuillez entrer des lettres !"
   }
 }
 
 function checkRadio(field) {
   let isChecked = false;
-  for (const element of field.data){
+  for (const element of field.data) {
     if (element.checked) {
       isChecked = true
     }
   }
   if (isChecked == false) {
-    return "Tu as des coches à faire"
+    return "Tu dois sélectionner au moins un endroit !"
   }
 }
 
 function checkConditions(field) {
   if (!field.checked) {
-    return "Il faut accepter les conditions d'utilisations"
+    return "Il faut accepter les conditions d'utilisations  !"
   };
+}
+
+//reset Form
+function resetForm() {
+  formElement.reset();
 }

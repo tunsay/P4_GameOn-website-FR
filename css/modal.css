@@ -180,8 +180,46 @@ main {
   overflow: hidden;
   position: relative;
   color: #fff;
+  font-size: 30px;
   padding-top: 10px;
 }
+
+.modal-confirm{   
+  width: 100%; 
+  max-width: 500px;
+  animation-name: modalopen;
+  animation-duration: var(--modal-duration);
+  background: #232323;
+  overflow: hidden;
+  border-radius: 10px;    
+  color: white;
+  font-size: x-large;
+  padding-top: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  margin: auto;
+  height: 75%;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  box-shadow: 0 2px 7px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+.modal-confirm-btn{
+  margin: 0;
+  font-size: 100%;
+  padding: .5rem 1rem;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  background-color: #fe142f;
+}
+
 
 .modal-body {
   padding: 15px 8%;
@@ -405,7 +443,6 @@ input[data-error]::after {
   font-size: 16px;
 }
 .hero-section {
-  min-height: 93vh;
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -478,7 +515,29 @@ footer {
   padding-right: 2vw;
   margin: 0 20px;
 }
+
+/* Tablet */
+@media screen and (min-width: 801px) and (max-width: 1023px){
+  
+  .hero-headline {
+    font-size: 4rem;
+  }
+
+  .hero-content::after{
+    display: none;
+  }
+
+  .hero-text{
+    width: 200%;
+  }
+}
+
+/* Smartphone */
 @media screen and (max-width: 800px) {
+  .content{
+    font-size: 40px;
+  }
+
   .hero-section {
     display: block;
     box-shadow: unset;
@@ -495,8 +554,7 @@ footer {
     display: none;
   }
   .hero-headline {
-    font-size: 4.5rem;
-    white-space: normal;
+    font-size: 3rem;
   }
   .hero-text {
     width: unset;
@@ -515,43 +573,6 @@ footer {
     margin-top: 50px;
     text-align: center;
   }
-}
-
-
-.modal-confirm{   
-  width: 100%; 
-  max-width: 500px;
-  animation-name: modalopen;
-  animation-duration: var(--modal-duration);
-  background: #232323;
-  overflow: hidden;
-  border-radius: 10px;    
-  color: white;
-  font-size: x-large;
-  padding-top: 10px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  margin: auto;
-  height: 75%;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  box-shadow: 0 2px 7px 2px rgba(0, 0, 0, 0.2);
-  display: none;
-}
-
-.modal-confirm-btn{
-  margin: 0;
-  font-size: 100%;
-  padding: .5rem 1rem;
-  border-radius: 7px;
-  color: #fff;
-  cursor: pointer;
-  background-color: #fe142f;
 }
 
 @keyframes modalopen {
