@@ -173,7 +173,9 @@ main {
   margin: 5% auto;
   width: 100%;
   max-width: 500px;
+  -webkit-animation-name: modalopen;
   animation-name: modalopen;
+  -webkit-animation-duration: var(--modal-duration);
   animation-duration: var(--modal-duration);
   background: #232323;
   border-radius: 10px;
@@ -187,7 +189,9 @@ main {
 .modal-confirm{   
   width: 100%; 
   max-width: 500px;
+  -webkit-animation-name: modalopen ;
   animation-name: modalopen;
+  -webkit-animation-duration: var(--modal-duration);
   animation-duration: var(--modal-duration);
   background: #232323;
   overflow: hidden;
@@ -575,7 +579,7 @@ footer {
   }
 }
 
-@keyframes modalopen {
+@-webkit-keyframes modalopen {
   from {
     opacity: 0;
     transform: translateY(-150px);
@@ -585,3 +589,12 @@ footer {
   }
 }
 
+@keyframes modalopen {
+  from {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+  to {
+    opacity: 1;
+  }
+}
