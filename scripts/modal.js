@@ -55,7 +55,7 @@ var conditions = document.forms["reserve"]["checkbox1"];
 
 let form = [firstName, lastName, email, birthdate, quantity, userLocation, conditions]
 
-
+//object
 const fieldsValidators = {
   first: {
     constraints: ['required', 'letter', 'min:2', 'max:50'],
@@ -80,6 +80,8 @@ const fieldsValidators = {
   },
 }
 
+console.log(fieldsValidators);
+
 formElement.addEventListener('submit', function (e) {
   e.preventDefault();
   validateFields(form); //[firstName, lastName, email, birthdate, quantity, conditions]
@@ -87,10 +89,11 @@ formElement.addEventListener('submit', function (e) {
 
 let isValidate = true;
 
+// This function will check each field
 function validateFields(fields) { //[firstName, lastName, email, birthdate, quantity, conditions]
   isValidate = true
   fields.forEach(field => { //For each Field
-    validateField(field, fieldsValidators[field.name].constraints);
+    validateFieldConstraints(field, fieldsValidators[field.name].constraints);
   });
   if (isValidate) {
     confirmationOpen();
@@ -99,7 +102,8 @@ function validateFields(fields) { //[firstName, lastName, email, birthdate, quan
 
 }
 
-function validateField(field, validators) { //{firstName, .constraints['required', 'letter', 'min:2', 'max:50']}
+// Checks the constraints of each field
+function validateFieldConstraints(field, validators) { //{firstName, .constraints['required', 'letter', 'min:2', 'max:50']}
   for (const validator of validators) {
     let error = ""
     let minMax = 0
@@ -174,18 +178,21 @@ function checkRequired(field) {
     return "Le champ ne doit pas être vide !"
 }
 
+//Check the minimum number of characters in a string
 function checkMin(field, min) {
   if (field.value.match(regexLetter) && field.value.length <= min) {
     return "Vous devez entrer " + min + " caractères ou plus !"
   }
 }
 
+//Check the minimum number of characters in a string
 function checkMax(field, max) {
   if (field.value.match(regexLetter) && field.value.length >= max) {
     return "Vous devez entrer " + max + " caractères ou moins !"
   }
 }
 
+// Check mail verification by Regex
 function checkMailRegex(field) {
   let emailInput = field.value;
   if (!emailInput.match(regexEmail)) {
@@ -193,6 +200,7 @@ function checkMailRegex(field) {
   }
 }
 
+// Check birthdate verification by Regex
 function checkBirthdateRegex(field) {
   let birthdateInput = field.value;
   if (!birthdateInput.match(regexBirthdate)) {
@@ -200,22 +208,25 @@ function checkBirthdateRegex(field) {
   }
 }
 
+// Check if it's a number
 function checkNumber(field) {
   if (!isNaN(field)) {
     return "Ceci n'est pas un numéro !"
   }
-  let MathSign = Math.sign(field.value)
+  let MathSign = Math.sign(field.value) //return -1 if negative, 1 if positive, 0 if null
   if (MathSign == -1) {
     return "Le numéro doit être positif !"
   }
 }
 
+// Checks if it is only composed of letters
 function checkLetter(field) {
   if (!field.value.match(regexLetter)) {
     return "Veuillez entrer des lettres !"
   }
 }
 
+// Checks if he has checked at least one place
 function checkRadio(field) {
   let isChecked = false;
   for (const element of field.data) {
@@ -228,6 +239,7 @@ function checkRadio(field) {
   }
 }
 
+// Checks if he has accepted the terms of use
 function checkConditions(field) {
   if (!field.checked) {
     return "Il faut accepter les conditions d'utilisations  !"
