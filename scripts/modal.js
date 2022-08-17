@@ -11,10 +11,11 @@ function editNav() {
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
-const modalClose = document.querySelectorAll(".close"); //Select all crosses in the modal
+const modalClose = document.querySelectorAll(".close");
+const modalCloseBtn = document.querySelectorAll(".btn-close"); //Select all crosses in the modal
 const formElement = document.querySelector('form'); //Select the form (name=reserve)
-const modalConfirm = document.querySelector('.modal-confirm'); //Select the modal after confirmation
-const modalConfirmClose = document.querySelector('.modal-confirm-btn'); //Select the "Close" button
+const formOpen = document.querySelector(".formOpen");
+const confirmationModal = document.querySelector(".confirmationModal");
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -27,22 +28,22 @@ function launchModal() {
 
 // close modal event
 modalClose.forEach((btn) => btn.addEventListener("click", close));
+modalCloseBtn.forEach((btn) => btn.addEventListener("click", close));
 
+let isValidate = false;
 //close modal event while press x
 function close() {
   modalbg.style.display = "none";
+  confirmationModal.style.display = "none"
+  formOpen.style.display = "block"
+  resetForm()
 }
 
 // displays confimation message on valid form submit
 function confirmationOpen() {
-  modalConfirm.style.display = "flex";
-  modalbg.style.display = "none";
+  formOpen.style.display = "none";
+  confirmationModal.style.display = "block";
 }
-
-//closes confirmation window
-modalConfirmClose.addEventListener('click', () => {
-  modalConfirm.style.display = "none";
-})
 
 // form data elements (field)
 var firstName = document.forms["reserve"]["first"];
@@ -80,14 +81,10 @@ const fieldsValidators = {
   },
 }
 
-console.log(fieldsValidators);
-
 formElement.addEventListener('submit', function (e) {
   e.preventDefault();
   validateFields(form); //[firstName, lastName, email, birthdate, quantity, conditions]
 });
-
-let isValidate = true;
 
 // This function will check each field
 function validateFields(fields) { //[firstName, lastName, email, birthdate, quantity, conditions]
@@ -96,8 +93,9 @@ function validateFields(fields) { //[firstName, lastName, email, birthdate, quan
     validateFieldConstraints(field, fieldsValidators[field.name].constraints);
   });
   if (isValidate) {
-    confirmationOpen();
+    console.log(isValidate);
     resetForm();
+    confirmationOpen();
   }
 
 }

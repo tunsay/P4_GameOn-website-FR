@@ -55,6 +55,7 @@
       <div class="content">
         <span class="close"></span>
         <div class="modal-body">
+          <div class="formOpen">
             <form name="reserve" action="index.html" method="get" novalidate>
               <div class="formData">
                 <label for="first">Prénom</label><br>
@@ -119,14 +120,14 @@
                 <br>
               </div>
               <input class="btn-submit" type="submit" class="button" value="C'est parti" />
-
             </form>
+          </div>
+          <div class="confirmationModal">
+            <div class="confirmationText">Merci de votre inscription!</div> 
+            <input class="btn-close" type="submit" onclick="close()" class="button" value="Fermer" />
+          </div>
         </div>
       </div>
-    </div>
-    <div class="modal-confirm">
-      <div class="modal-confirm-message">Merci de votre inscription!</div>
-      <div class="modal-confirm-btn">Fermer</div>
     </div>
   </main>
   <footer>
